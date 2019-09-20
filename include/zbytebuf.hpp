@@ -43,6 +43,17 @@ public:
     }
   }
 
+    zbytebuf(const char* hex_str) {
+        std::unique_ptr<byte_v> result(new byte_v());
+        std::string hex(hex_str);
+        for (size_t i = 0; i < hex.length(); i += 2) {
+            std::string byte = hex.substr(i, 2);
+            unsigned char chr = (unsigned char)(int)strtol(byte.c_str(), NULL, 16);
+            result->push_back(chr);
+        }
+        m_mem = std::move(result);
+    }
+    
   zbytebuf(const std::string &hex_str) {
     std::unique_ptr<byte_v> result(new byte_v());
     for (size_t i = 0; i < hex_str.length(); i += 2) {
@@ -61,83 +72,32 @@ public:
   }
 
 public:
-    
     zbytebuf& little_ending() {
         std::reverse(m_mem->begin(), m_mem->end());
         return *this;
     }
 public:
-  zbytebuf& write(uint8_t ut) {
-      m_mem->emplace_back(ut);
-      return *this;
-  }
-
-  zbytebuf& write(uint16_t ut) {
-    m_mem->emplace_back((ut >> 8) & 0xFF);
-    m_mem->emplace_back(ut & 0xFF);
-      return *this;
-  }
-
-  zbytebuf& write(uint32_t ut) {
-    m_mem->emplace_back((ut >> 24) & 0xFF);
-    m_mem->emplace_back((ut >> 16) & 0xFF);
-    m_mem->emplace_back((ut >> 8) & 0xFF);
-    m_mem->emplace_back(ut & 0xFF);
-      return *this;
-  }
-
-  zbytebuf& write(uint64_t ut) {
-    m_mem->emplace_back((ut >> 56) & 0xFF);
-    m_mem->emplace_back((ut >> 48) & 0xFF);
-    m_mem->emplace_back((ut >> 40) & 0xFF);
-    m_mem->emplace_back((ut >> 32) & 0xFF);
-    m_mem->emplace_back((ut >> 24) & 0xFF);
-    m_mem->emplace_back((ut >> 16) & 0xFF);
-    m_mem->emplace_back((ut >> 8) & 0xFF);
-    m_mem->emplace_back(ut & 0xFF);
-      return *this;
-  }
-    
     template <typename T>
-    typename std::enable_if<std::is_same<T, uint64_t>::value, uint64_t>::type
-    read(size_t index) const {
-        if (index + sizeof(T) > length()) {
-            throw std::out_of_range("zbytebuf split out of range");
+    zbytebuf& append(T ut) {
+        for (int i = 0; i < sizeof(T); ++i)
+        {
+            m_mem->emplace_back((ut >> (8 * (sizeof(T) - i - 1))) & 0xFF);
         }
-        return
-        (((uint64_t)(*m_mem)[index]) << 56) |
-        (((uint64_t)(*m_mem)[index + 1]) << 48) |
-        (((uint64_t)(*m_mem)[index + 2]) << 40) |
-        (((uint64_t)(*m_mem)[index + 3]) << 32) |
-        (((uint64_t)(*m_mem)[index + 4]) << 24) |
-        (((uint64_t)(*m_mem)[index + 5]) << 16) |
-        (((uint64_t)(*m_mem)[index + 6]) << 8) |
-        (((uint64_t)(*m_mem)[index + 7]) << 0);
+        return *this;
     }
-    
-  template <typename T>
-  typename std::enable_if<std::is_same<T, uint32_t>::value, uint32_t>::type
-  read(size_t index) const {
-    if (index + sizeof(T) > length()) {
-      throw std::out_of_range("zbytebuf split out of range");
-    }
-    return (((uint32_t)(*m_mem)[index]) << 24) |
-           (((uint32_t)(*m_mem)[index + 1]) << 16) |
-           (((uint32_t)(*m_mem)[index + 2]) << 8) |
-           (((uint32_t)(*m_mem)[index + 3]) << 0);
-  }
-    
+
     template <typename T>
-    typename std::enable_if<std::is_same<T, uint16_t>::value, uint16_t>::type
+    typename std::enable_if<std::is_same<T, T>::value, T>::type
     read(size_t index) const {
-        if (index + sizeof(T)> length()) {
-            throw std::out_of_range("zbytebuf split out of range");
+        size_t end_index = std::min(sizeof(T), length() - index);
+        T ret = 0;
+        for (int i = 0; i < end_index; ++i)
+        {
+            ret |= (((uint64_t)(*m_mem)[index + i]) << (8 * (sizeof(T) - 1 - i)));
         }
-        return
-        (((uint16_t)(*m_mem)[index]) << 8) |
-        (((uint16_t)(*m_mem)[index + 1]) << 0);
+        
+        return ret;
     }
-    
 
   zbytebuf slice(size_t loc, size_t length) const {
     if (loc + length > m_mem->size()) {
@@ -290,16 +250,19 @@ public:
     return this->hex_str().substr(0, prefix.length()) == prefix;
   }
 
-  zbytebuf &padding_zero(size_t to_size) {
-    if (to_size < m_mem->size()) {
-      throw std::invalid_argument("padding size less than current size");
+    zbytebuf& pad(std::function<zbytebuf(const zbytebuf& ori)> padding)
+    {
+        auto tail = padding(*this);
+        m_mem->insert(std::end(*m_mem), std::begin(tail.mem()), std::end(tail.mem()));
+        return *this;
     }
-    auto padding_len = to_size - m_mem->size();
-    for (int i = 0; i < padding_len; ++i) {
-      m_mem->emplace_back(0x00);
+    
+    zbytebuf& pad_head(std::function<zbytebuf(const zbytebuf& ori)> padding)
+    {
+        auto tail = padding(*this);
+        m_mem->insert(std::begin(*m_mem), std::begin(tail.mem()), std::end(tail.mem()));
+        return *this;
     }
-    return *this;
-  }
 
 public:
   // MARK: functional
