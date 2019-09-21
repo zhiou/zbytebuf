@@ -75,7 +75,19 @@ using namespace zzz;
     XCTAssert(d == 0x3344551122334455);
     
     zbytebuf ccc("1122334455112233445511223344551122334455");
-    ccc.modify(1, (uint16_t)0x1111).debug();
+    ccc.modify<uint16_t>(1, 2, (uint16_t)0x1111).debug();
+    
+    // sample apdu format: FF AA Len LenR Data CRC
+    zbytebuf apdu;
+    apdu.append<std::string>("FFAA");
+    apdu.append<uint16_t>(0x6AFC);
+    apdu.reserve(3).reserve(3);
+    apdu += ccc;
+    
+    apdu.modify<int>(2, 3, 300);
+    apdu.modify<int>(5, 3, 158);
+    apdu.modify<std::string>(8, 3, "AABBCCDD");
+    apdu.debug();
 }
 
 - (void)testPerformanceExample {

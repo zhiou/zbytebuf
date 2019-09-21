@@ -74,17 +74,24 @@ namespace zzz {
         }
         
     public:
-        zbytebuf& little_ending() {
+        zbytebuf& reverse() {
             std::reverse(m_mem->begin(), m_mem->end());
             return *this;
         }
     public:
         template <typename T>
-        zbytebuf& append(T ut) {
+        zbytebuf& append(typename std::enable_if<std::is_integral<T>::value, T>::type ut) {
             for (int i = 0; i < sizeof(T); ++i)
             {
                 m_mem->emplace_back((ut >> (8 * (sizeof(T) - i - 1))) & 0xFF);
             }
+            return *this;
+        }
+        
+        template <typename T>
+        zbytebuf& append(typename std::enable_if<not std::is_integral<T>::value, T>::type ut) {
+            zbytebuf temp(ut);
+            *this += temp;
             return *this;
         }
         
@@ -310,10 +317,22 @@ namespace zzz {
         }
 
         template <typename T>
-        zbytebuf& modify(size_t index, T val) {
-            for (int i = 0; i < sizeof(T); ++i)
+        zbytebuf& modify(size_t index, size_t len, typename std::enable_if<std::is_integral<T>::value, T>::type val) {
+            size_t nb = std::min(sizeof(T), len);
+            for (int i = 0; i < nb; ++i)
             {
-                (*m_mem)[index + i] = ((val >> (8 * (sizeof(T) - i - 1))) & 0xFF);
+                (*m_mem)[index + i] = ((val >> (8 * (nb - i - 1))) & 0xFF);
+            }
+            return *this;
+        }
+        
+        template <typename T>
+        zbytebuf& modify(size_t index, size_t len, typename std::enable_if<not std::is_integral<T>::value, T>::type val) {
+            zbytebuf tem(val);
+            size_t nb = std::min(tem.length(), len);
+            for (int i = 0; i < nb; ++i)
+            {
+                (*m_mem)[index + len - 1 - i] = tem[tem.length() - i - 1];
             }
             return *this;
         }
