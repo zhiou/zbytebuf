@@ -1,6 +1,8 @@
 # zbytebuf
 一个纯头文件的轻量易用的函数式字节处理类。
 
+![Build Status](https://www.travis-ci.org/femperor/zbytebuf.svg?branch=master)
+
 ## Why zbytebuf?
 
 目前在一家商用密码公司工作，常常要与硬件打交道，封装和解析APDU指令。
