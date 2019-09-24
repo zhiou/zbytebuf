@@ -60,7 +60,7 @@ xcuserdata/
 # Packages/
 .build/
 
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots/**/*.png
-fastlane/test_output
+report.xml
+Preview.html
+screenshots/**/*.png
+test_output
