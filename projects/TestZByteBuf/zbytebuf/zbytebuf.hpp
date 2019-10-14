@@ -57,8 +57,13 @@ namespace zzz {
         
         zbytebuf(const std::string &hex_str) {
             std::unique_ptr<byte_v> result(new byte_v());
-            for (size_t i = 0; i < hex_str.length(); i += 2) {
-                std::string byte = hex_str.substr(i, 2);
+            std::string hs = hex_str;
+            if (hs.length() % 2 == 1)
+             {
+                 hs = "0" + hex_str;
+             }
+            for (size_t i = 0; i < hs.length(); i += 2) {
+                std::string byte = hs.substr(i, 2);
                 unsigned char chr = (unsigned char)(int)strtol(byte.c_str(), NULL, 16);
                 result->push_back(chr);
             }
@@ -79,11 +84,22 @@ namespace zzz {
             return *this;
         }
     public:
-        template <typename T>
+        
+        // 对于一般整数类型，直接转换有多长，转多长,不超过8字节
+        zbytebuf& append(uint64_t t) {
+            std::stringstream ss;
+            std::string s;
+            ss << std::hex << t;
+            ss >> s;
+            return *this += zbytebuf(s);
+        }
+        
+        // 可以指定转换为字节的长度，补足则前面补0，默认为类型宽度
+        template <typename T, int N = sizeof(T)>
         zbytebuf& append(typename std::enable_if<std::is_integral<T>::value, T>::type ut) {
-            for (int i = 0; i < sizeof(T); ++i)
+            for (int i = 0; i < N; ++i)
             {
-                m_mem->emplace_back((ut >> (8 * (sizeof(T) - i - 1))) & 0xFF);
+                m_mem->emplace_back((ut >> (8 * (N - i - 1))) & 0xFF);
             }
             return *this;
         }
@@ -312,7 +328,7 @@ namespace zzz {
         zbytebuf& reserve(size_t n)
         {
             byte_v temp(n);
-            m_mem->insert(std::end(*m_mem), temp.begin(), temp.end());
+            std::reverse(std::begin(*m_mem), std::end(*m_mem));
             return *this;
         }
 
