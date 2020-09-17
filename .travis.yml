@@ -11,7 +11,7 @@ ruby: 2.2.0
 
 before_install:
 
-- gem install fastlane --no-rdoc --no-ri --no-document --quiet
+- gem install fastlane --quiet
 
 install: true
 
