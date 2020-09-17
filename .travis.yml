@@ -7,7 +7,7 @@ osx_image: xcode10
 compiler: 
 - clang
 
-ruby: 2.2.0
+ruby: 2.7.0
 
 before_install:
 
