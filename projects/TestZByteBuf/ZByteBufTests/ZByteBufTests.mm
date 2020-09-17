@@ -75,19 +75,52 @@ using namespace zzz;
     XCTAssert(d == 0x3344551122334455);
     
     zbytebuf ccc("1122334455112233445511223344551122334455");
-    ccc.modify<uint16_t>(1, 2, (uint16_t)0x1111).debug();
+    ccc.replace(1, 2, zbytebuf("1111")).debug();
     
+    XCTAssert(ccc == zbytebuf("1111114455112233445511223344551122334455"));
     // sample apdu format: FF AA Len LenR Data CRC
     zbytebuf apdu;
     apdu.append<std::string>("FFAA");
     apdu.append<uint16_t>(0x6AFC);
     apdu.reserve(3).reserve(3);
     apdu += ccc;
-    
-    apdu.modify<int>(2, 3, 300);
-    apdu.modify<int>(5, 3, 158);
-    apdu.modify<std::string>(8, 3, "AABBCCDD");
     apdu.debug();
+    
+    XCTAssert(apdu == zbytebuf("ffaa6afc1111114455112233445511223344551122334455"));
+    
+    apdu.replace(2, 1, zbytebuf("1CB0")).debug();
+     XCTAssert(apdu == zbytebuf("ffaa1cb0fc1111114455112233445511223344551122334455"));
+    
+    apdu.replace(5, 3, zbytebuf("00FF")).debug();
+    XCTAssert(apdu == zbytebuf("ffaa1cb0fc00FF4455112233445511223344551122334455"));
+    apdu.replace(8, 3, "AABBCCDD").debug();
+    apdu.debug();
+    XCTAssert(apdu == zbytebuf("ffaa1cb0fc00FF44aabbccdd33445511223344551122334455"));
+    apdu.append<uint16_t>(0x645)
+    .debug();
+    XCTAssert(apdu == zbytebuf("ffaa1cb0fc00FF44aabbccdd334455112233445511223344550645"));
+    
+    apdu.appendIf<uint16_t>(0xAAAA, [](){
+        return true;
+    })
+    .debug();
+     XCTAssert(apdu == zbytebuf("ffaa1cb0fc00FF44aabbccdd334455112233445511223344550645AAAA"));
+    
+    apdu.appendIf("BBBB", [](){
+        return false;
+    })
+    .debug();
+    XCTAssert(apdu == zbytebuf("ffaa1cb0fc00FF44aabbccdd334455112233445511223344550645AAAA"));
+    
+    apdu.replace(0, 4, zbytebuf("11223344"))
+    .debug();
+    
+    XCTAssert(apdu == zbytebuf("11223344fc00FF44aabbccdd334455112233445511223344550645AAAA"));
+    
+    apdu.replace(0, 0, zbytebuf("BBBB"))
+    .debug();
+    
+    XCTAssert(apdu == zbytebuf("BBBB11223344fc00FF44aabbccdd334455112233445511223344550645AAAA"));
 }
 
 - (void)testPerformanceExample {

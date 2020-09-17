@@ -331,6 +331,7 @@
 		9F0A69442335C536008CF3D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = B2T9DL6Y5B;
 				EXECUTABLE_PREFIX = lib;
@@ -344,6 +345,7 @@
 		9F0A69452335C536008CF3D4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = B2T9DL6Y5B;
 				EXECUTABLE_PREFIX = lib;

@@ -14,20 +14,21 @@
 #include <sstream>
 #include <vector>
 #include <set>
+#include <errno.h>
 
 namespace zzz {
     
-    typedef unsigned char byte;
-    typedef std::vector<byte> byte_v;
+    using byte = unsigned char;
+    using byte_v = std::vector<byte>;
     
     class zbytebuf {
     public:
-        zbytebuf() : m_mem(new byte_v()) {}
+        zbytebuf() : m_mem(std::make_unique<byte_v>()) {}
         
-        zbytebuf(size_t size,
+        explicit zbytebuf(size_t size,
         bool random = false) // 初始化指定大小，默认全0，否则填充随机数
         {
-            m_mem = std::unique_ptr<byte_v>(new byte_v(size));
+            m_mem = std::make_unique<byte_v>(size);
             if (!random)
                 return;
             
@@ -37,9 +38,9 @@ namespace zzz {
             std::generate(std::begin(*m_mem), std::end(*m_mem), std::ref(r));
         }
         
-        zbytebuf(const void *hex, size_t len) {
-            m_mem = std::unique_ptr<byte_v>(new byte_v(len));
-            for (int i = 0; i < len; ++i) {
+        zbytebuf(const void* hex, size_t size) {
+            m_mem = std::make_unique<byte_v>(size);
+            for (int i = 0; i < size; ++i) {
                 (*m_mem)[i] = ((const unsigned char *)hex)[i];
             }
         }
@@ -47,6 +48,9 @@ namespace zzz {
         zbytebuf(const char* hex_str) {
             std::unique_ptr<byte_v> result(new byte_v());
             std::string hex(hex_str);
+            if (hex.length() % 2 == 1) {
+                hex = "0" + hex;
+            }
             for (size_t i = 0; i < hex.length(); i += 2) {
                 std::string byte = hex.substr(i, 2);
                 unsigned char chr = (unsigned char)(int)strtol(byte.c_str(), NULL, 16);
@@ -55,28 +59,11 @@ namespace zzz {
             m_mem = std::move(result);
         }
         
-        zbytebuf(const std::string &hex_str) {
-            std::unique_ptr<byte_v> result(new byte_v());
-            std::string hs = hex_str;
-            if (hs.length() % 2 == 1)
-             {
-                 hs = "0" + hex_str;
-             }
-            for (size_t i = 0; i < hs.length(); i += 2) {
-                std::string byte = hs.substr(i, 2);
-                unsigned char chr = (unsigned char)(int)strtol(byte.c_str(), NULL, 16);
-                result->push_back(chr);
-            }
-            m_mem = std::move(result);
-        }
+        zbytebuf(const std::string &hex_str):zbytebuf(hex_str.c_str()) { }
         
-        zbytebuf(const byte_v &mem) {
-            m_mem = std::unique_ptr<byte_v>(new byte_v(mem));
-        }
+        zbytebuf(const byte_v &mem): m_mem(std::make_unique<byte_v>(mem)) {}
         
-        zbytebuf(byte_v &mem) {
-            m_mem = std::unique_ptr<byte_v>(new byte_v(mem));
-        }
+        zbytebuf(byte_v &&mem): m_mem(std::make_unique<byte_v>(std::move(mem))) {}
         
     public:
         zbytebuf& reverse() {
@@ -84,30 +71,47 @@ namespace zzz {
             return *this;
         }
     public:
-        
-        // 对于一般整数类型，直接转换有多长，转多长,不超过8字节
-        zbytebuf& append(uint64_t t) {
-            std::stringstream ss;
-            std::string s;
-            ss << std::hex << t;
-            ss >> s;
-            return *this += zbytebuf(s);
-        }
-        
+
         // 可以指定转换为字节的长度，补足则前面补0，默认为类型宽度
-        template <typename T, int N = sizeof(T)>
+        template <typename T, int N = 0>
         zbytebuf& append(typename std::enable_if<std::is_integral<T>::value, T>::type ut) {
-            for (int i = 0; i < N; ++i)
+            auto size = (N == 0) ? sizeof(T) : N;
+            for (int i = 0; i < size; ++i)
             {
-                m_mem->emplace_back((ut >> (8 * (N - i - 1))) & 0xFF);
+                m_mem->emplace_back((ut >> (8 * (size - i - 1))) & 0xFF);
             }
             return *this;
         }
         
-        template <typename T>
+        template <typename T, int N = 0>
         zbytebuf& append(typename std::enable_if<not std::is_integral<T>::value, T>::type ut) {
+            
             zbytebuf temp(ut);
+            if (N > 0) {
+                if (N > temp.length()) {
+                    auto zeros = zbytebuf(N - temp.length());
+                    temp.addHead(zeros);
+                } else {
+                    temp.drop_back(N - temp.length());
+                }
+            }
             *this += temp;
+            return *this;
+        }
+        
+        template <typename T, int N = 0>
+        zbytebuf& appendIf(T ut, std::function<bool()> condition) {
+            if (condition()) {
+                append<T, N>(ut);
+            }
+            return *this;
+        }
+        
+        template <typename T, int N = 0>
+        zbytebuf& appendUntil(T ut, std::function<bool()> condition) {
+            while(!condition()) {
+                append<T, N>(ut);
+            }
             return *this;
         }
         
@@ -311,6 +315,11 @@ namespace zzz {
             return true;
         }
         
+        zbytebuf& addHead(const zbytebuf& buf) {
+            m_mem->insert(std::begin(*m_mem), std::begin(buf.mem()), std::end(buf.mem()));
+            return *this;
+        }
+        
         zbytebuf& pad(std::function<zbytebuf(const zbytebuf& ori)> padding)
         {
             auto tail = padding(*this);
@@ -332,23 +341,22 @@ namespace zzz {
             return *this;
         }
 
-        template <typename T>
-        zbytebuf& modify(size_t index, size_t len, typename std::enable_if<std::is_integral<T>::value, T>::type val) {
-            size_t nb = std::min(sizeof(T), len);
-            for (int i = 0; i < nb; ++i)
-            {
-                (*m_mem)[index + i] = ((val >> (8 * (nb - i - 1))) & 0xFF);
+        zbytebuf& replace(size_t index, size_t len, const zbytebuf& buf) {
+            auto temp = std::min(len, buf.length());
+            auto iter = std::begin(*m_mem);
+            size_t i = 0;
+            iter += index;
+            while(i < temp) {
+                *iter = buf.mem()[i];
+                i++;
+                iter++;
             }
-            return *this;
-        }
-        
-        template <typename T>
-        zbytebuf& modify(size_t index, size_t len, typename std::enable_if<not std::is_integral<T>::value, T>::type val) {
-            zbytebuf tem(val);
-            size_t nb = std::min(tem.length(), len);
-            for (int i = 0; i < nb; ++i)
-            {
-                (*m_mem)[index + len - 1 - i] = tem[tem.length() - i - 1];
+            if (len > temp) {
+                m_mem->erase(iter, iter + len - temp);
+            }
+            else {
+                auto t = buf.back(buf.length() - temp).mem();
+                m_mem->insert(iter, std::begin(t), std::end(t));
             }
             return *this;
         }
