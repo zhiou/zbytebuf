@@ -7,27 +7,43 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9F0A69322335C4FC008CF3D4 /* ZByteBufTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F0A69312335C4FC008CF3D4 /* ZByteBufTests.mm */; };
 		9F0A693E2335C536008CF3D4 /* zbytebuf.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 9F0A693D2335C536008CF3D4 /* zbytebuf.hpp */; };
+		9F3EE6E126C519CC0087282E /* catch.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EE6D326C518710087282E /* catch.hpp */; };
+		9F3EE6E226C519CC0087282E /* normal_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EE6D426C518950087282E /* normal_test.cpp */; };
+		9F3EE6E726C51A2C0087282E /* zbytebuf.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0A693D2335C536008CF3D4 /* zbytebuf.hpp */; };
+		9F3EE6E926C51D7A0087282E /* mail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EE6E826C51D7A0087282E /* mail.cpp */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		9F3EE6D826C519BC0087282E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		9F0A692F2335C4FC008CF3D4 /* ZByteBufTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZByteBufTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9F0A69312335C4FC008CF3D4 /* ZByteBufTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ZByteBufTests.mm; sourceTree = "<group>"; };
-		9F0A69332335C4FC008CF3D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F0A693B2335C536008CF3D4 /* libzbytebuf.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libzbytebuf.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F0A693D2335C536008CF3D4 /* zbytebuf.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = zbytebuf.hpp; sourceTree = "<group>"; };
+		9F3EE6D326C518710087282E /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
+		9F3EE6D426C518950087282E /* normal_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = normal_test.cpp; sourceTree = "<group>"; };
+		9F3EE6DA26C519BC0087282E /* normal_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = normal_test; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F3EE6E826C51D7A0087282E /* mail.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mail.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		9F0A692C2335C4FC008CF3D4 /* Frameworks */ = {
+		9F0A69392335C536008CF3D4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9F0A69392335C536008CF3D4 /* Frameworks */ = {
+		9F3EE6D726C519BC0087282E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -40,28 +56,20 @@
 		9F0A69162334A10D008CF3D4 = {
 			isa = PBXGroup;
 			children = (
-				9F0A69302335C4FC008CF3D4 /* ZByteBufTests */,
+				9F3EE6D226C518710087282E /* tests */,
 				9F0A693C2335C536008CF3D4 /* zbytebuf */,
 				9F0A69202334A10D008CF3D4 /* Products */,
+				9F3EE6E326C519D00087282E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		9F0A69202334A10D008CF3D4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9F0A692F2335C4FC008CF3D4 /* ZByteBufTests.xctest */,
 				9F0A693B2335C536008CF3D4 /* libzbytebuf.a */,
+				9F3EE6DA26C519BC0087282E /* normal_test */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		9F0A69302335C4FC008CF3D4 /* ZByteBufTests */ = {
-			isa = PBXGroup;
-			children = (
-				9F0A69312335C4FC008CF3D4 /* ZByteBufTests.mm */,
-				9F0A69332335C4FC008CF3D4 /* Info.plist */,
-			);
-			path = ZByteBufTests;
 			sourceTree = "<group>";
 		};
 		9F0A693C2335C536008CF3D4 /* zbytebuf */ = {
@@ -70,6 +78,23 @@
 				9F0A693D2335C536008CF3D4 /* zbytebuf.hpp */,
 			);
 			path = zbytebuf;
+			sourceTree = "<group>";
+		};
+		9F3EE6D226C518710087282E /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				9F3EE6D326C518710087282E /* catch.hpp */,
+				9F3EE6D426C518950087282E /* normal_test.cpp */,
+				9F3EE6E826C51D7A0087282E /* mail.cpp */,
+			);
+			path = tests;
+			sourceTree = "<group>";
+		};
+		9F3EE6E326C519D00087282E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -86,23 +111,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		9F0A692E2335C4FC008CF3D4 /* ZByteBufTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 9F0A69362335C4FC008CF3D4 /* Build configuration list for PBXNativeTarget "ZByteBufTests" */;
-			buildPhases = (
-				9F0A692B2335C4FC008CF3D4 /* Sources */,
-				9F0A692C2335C4FC008CF3D4 /* Frameworks */,
-				9F0A692D2335C4FC008CF3D4 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = ZByteBufTests;
-			productName = ZByteBufTests;
-			productReference = 9F0A692F2335C4FC008CF3D4 /* ZByteBufTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		9F0A693A2335C536008CF3D4 /* zbytebuf */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9F0A69432335C536008CF3D4 /* Build configuration list for PBXNativeTarget "zbytebuf" */;
@@ -120,6 +128,23 @@
 			productReference = 9F0A693B2335C536008CF3D4 /* libzbytebuf.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		9F3EE6D926C519BC0087282E /* normal_test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9F3EE6DE26C519BC0087282E /* Build configuration list for PBXNativeTarget "normal_test" */;
+			buildPhases = (
+				9F3EE6D626C519BC0087282E /* Sources */,
+				9F3EE6D726C519BC0087282E /* Frameworks */,
+				9F3EE6D826C519BC0087282E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = normal_test;
+			productName = normal_test;
+			productReference = 9F3EE6DA26C519BC0087282E /* normal_test */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -129,11 +154,11 @@
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = zzstudio;
 				TargetAttributes = {
-					9F0A692E2335C4FC008CF3D4 = {
-						CreatedOnToolsVersion = 11.0;
-					};
 					9F0A693A2335C536008CF3D4 = {
 						CreatedOnToolsVersion = 11.0;
+					};
+					9F3EE6D926C519BC0087282E = {
+						CreatedOnToolsVersion = 12.5.1;
 					};
 				};
 			};
@@ -150,35 +175,28 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9F0A692E2335C4FC008CF3D4 /* ZByteBufTests */,
 				9F0A693A2335C536008CF3D4 /* zbytebuf */,
+				9F3EE6D926C519BC0087282E /* normal_test */,
 			);
 		};
 /* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */
-		9F0A692D2335C4FC008CF3D4 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		9F0A692B2335C4FC008CF3D4 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9F0A69322335C4FC008CF3D4 /* ZByteBufTests.mm in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		9F0A69382335C536008CF3D4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F3EE6D626C519BC0087282E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F3EE6E926C51D7A0087282E /* mail.cpp in Sources */,
+				9F3EE6E726C51A2C0087282E /* zbytebuf.hpp in Sources */,
+				9F3EE6E126C519CC0087282E /* catch.hpp in Sources */,
+				9F3EE6E226C519CC0087282E /* normal_test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,40 +312,6 @@
 			};
 			name = Release;
 		};
-		9F0A69342335C4FC008CF3D4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = B2T9DL6Y5B;
-				INFOPLIST_FILE = ZByteBufTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zzstudio.ZByteBufTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		9F0A69352335C4FC008CF3D4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = B2T9DL6Y5B;
-				INFOPLIST_FILE = ZByteBufTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zzstudio.ZByteBufTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		9F0A69442335C536008CF3D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -356,6 +340,30 @@
 			};
 			name = Release;
 		};
+		9F3EE6DF26C519BC0087282E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = J5BVFFC7P4;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		9F3EE6E026C519BC0087282E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = J5BVFFC7P4;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -368,20 +376,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9F0A69362335C4FC008CF3D4 /* Build configuration list for PBXNativeTarget "ZByteBufTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9F0A69342335C4FC008CF3D4 /* Debug */,
-				9F0A69352335C4FC008CF3D4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		9F0A69432335C536008CF3D4 /* Build configuration list for PBXNativeTarget "zbytebuf" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9F0A69442335C536008CF3D4 /* Debug */,
 				9F0A69452335C536008CF3D4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9F3EE6DE26C519BC0087282E /* Build configuration list for PBXNativeTarget "normal_test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F3EE6DF26C519BC0087282E /* Debug */,
+				9F3EE6E026C519BC0087282E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

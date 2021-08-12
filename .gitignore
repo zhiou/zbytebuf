@@ -64,3 +64,4 @@ report.xml
 Preview.html
 screenshots/**/*.png
 test_output
+.DS_Store

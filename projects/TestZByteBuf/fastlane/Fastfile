@@ -22,7 +22,7 @@ platform :ios do
   end
 
   lane :test do 
-  	scan(scheme: "zbytebuf")
+  	# scan(scheme: "zbytebuf")
   end
 
 end
