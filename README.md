@@ -1,7 +1,7 @@
 # zbytebuf
 一个纯头文件的轻量易用的函数式字节处理类。
 
-[![Build Status](https://www.travis-ci.org/femperor/zbytebuf.svg?branch=master)](https://www.travis-ci.org/femperor/zbytebuf)
+[![Build Status](https://www.travis-ci.org/zhiou/zbytebuf.svg?branch=master)](https://www.travis-ci.org/zhiou/zbytebuf)
 
 ## Why zbytebuf?
 
