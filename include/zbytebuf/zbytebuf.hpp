@@ -98,7 +98,7 @@ namespace zzz {
                     auto zeros = zbytebuf(N - temp.length());
                     temp.addHead(zeros);
                 } else {
-                    temp.drop_back(N - temp.length());
+                    temp.drop_back(temp.length() - N);
                 }
             }
             *this += temp;
@@ -108,14 +108,6 @@ namespace zzz {
         template <typename T, int N = 0>
         zbytebuf& appendIf(T ut, std::function<bool()> condition) {
             if (condition()) {
-                append<T, N>(ut);
-            }
-            return *this;
-        }
-        
-        template <typename T, int N = 0>
-        zbytebuf& appendUntil(T ut, std::function<bool()> condition) {
-            while(!condition()) {
                 append<T, N>(ut);
             }
             return *this;
@@ -181,6 +173,9 @@ namespace zzz {
         
         const byte &operator[](int i) const { return m_mem->at(i); }
         
+        bool equals(zbytebuf &&other) {
+            return *this == other;
+        }
     public:
         // MARK: operators
         zbytebuf &operator+=(const zbytebuf &other) {
@@ -386,6 +381,15 @@ namespace zzz {
         zbytebuf& debug(){
             std::cout << *this << std::endl;
             return *this;
+        }
+        
+        bool all(std::function<bool(const byte&)> condition) {
+            for (auto b: *m_mem) {
+                if (!condition(b)) {
+                    return false;
+                }
+            }
+            return true;
         }
    
     public:
