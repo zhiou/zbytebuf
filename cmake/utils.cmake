@@ -1,0 +1,26 @@
+# Get zbytebuf version from include/zbytebuf/zbytebuf.hpp and put it in ZBF_VERSION
+function(zbytebuf_extract_version)
+    file(READ "${CMAKE_CURRENT_LIST_DIR}/include/zbytebuf/zbytebuf.hpp" file_contents)
+    string(REGEX MATCH "ZBF_VER_MAJOR ([0-9]+)" _ "${file_contents}")
+    if(NOT CMAKE_MATCH_COUNT EQUAL 1)
+        message(FATAL_ERROR "Could not extract major version number from zbytebuf/zbytebuf.hpp")
+    endif()
+    set(ver_major ${CMAKE_MATCH_1})
+
+    string(REGEX MATCH "ZBF_VER_MINOR ([0-9]+)" _ "${file_contents}")
+    if(NOT CMAKE_MATCH_COUNT EQUAL 1)
+        message(FATAL_ERROR "Could not extract minor version number from zbytebuf/zbytebuf.hpp")
+    endif()
+
+    set(ver_minor ${CMAKE_MATCH_1})
+    string(REGEX MATCH "ZBF_VER_PATCH ([0-9]+)" _ "${file_contents}")
+    if(NOT CMAKE_MATCH_COUNT EQUAL 1)
+        message(FATAL_ERROR "Could not extract patch version number from zbytebuf/zbytebuf.hpp")
+    endif()
+    set(ver_patch ${CMAKE_MATCH_1})
+
+    set(ZBF_VERSION_MAJOR ${ver_major} PARENT_SCOPE)
+    set(ZBF_VERSION_MINOR ${ver_minor} PARENT_SCOPE)
+    set(ZBF_VERSION_PATCH ${ver_patch} PARENT_SCOPE)
+    set(ZBYTEBUF_VERSION "${ver_major}.${ver_minor}.${ver_patch}" PARENT_SCOPE)
+endfunction()

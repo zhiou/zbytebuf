@@ -8,7 +8,7 @@
 
 
 #include "catch.hpp"
-#include "zbytebuf.hpp"
+#include "zbytebuf/zbytebuf.hpp"
 
 using namespace zzz;
 

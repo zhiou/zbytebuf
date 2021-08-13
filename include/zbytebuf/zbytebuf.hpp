@@ -16,6 +16,12 @@
 #include <set>
 #include <errno.h>
 
+#define ZBF_VER_MAJOR 6
+#define ZBF_VER_MINOR 3
+#define ZBF_VER_PATCH 0
+
+#define ZBYTEBUF_VERSION (ZBF_VER_MAJOR * 10000 + ZBF_VER_MINOR * 100 + ZBF_VER_PATCH)
+
 namespace zzz {
     
     using byte = unsigned char;

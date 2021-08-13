@@ -7,14 +7,22 @@ osx_image: xcode10
 compiler: 
 - clang
 
-ruby: 2.7.0
-
 before_install:
 
-- gem install fastlane --quiet
+- git clone https://github.com/google/googletest
+- cd googletest
+- mkdir build
+- cd build
+- cmake ..
+- make
+- make install
 
 install: true
 
 script:
-- cd projects/TestZByteBuf
-- fastlane test
+- cd ../../
+- mkdir build
+- cd build
+- cmake ..
+- make
+- make test
