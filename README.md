@@ -18,7 +18,7 @@ zbytebuf apdu("FFAA");
 apdu.reserve(3)  // 保留3字节，用于填充负载长度
     .append<std::string>("112233")
     .append<uint16_t>(0x6A48);
-    .modify<uint16_t>(2, 3, 0x05);
+    .replace<uint16_t>(2, 3, "000005");
     .debug();          // "FFAA0000051122336A48"
 		
 ```
