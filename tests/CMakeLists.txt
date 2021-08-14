@@ -7,7 +7,10 @@ set(IMPORT_HEADERS_DIR ${CMAKE_CURRENT_LIST_DIR}/../include)
 include_directories(${IMPORT_HEADERS_DIR})
 
 set(ZBYTEBUF_UTESTS_SOURCES
-        test_basic.cpp
+        test_append.cpp
+        test_constructors.cpp
+        test_math_operators.cpp
+        test_functional_methods.cpp
         main.cpp)
 
 enable_testing()

@@ -29,6 +29,9 @@ namespace zzz {
     
     class zbytebuf {
     public:
+        
+        //MARK: constructors
+        
         zbytebuf() : m_mem(std::make_unique<byte_v>()) {}
         
         explicit zbytebuf(size_t size,
@@ -71,12 +74,42 @@ namespace zzz {
         
         zbytebuf(byte_v &&mem): m_mem(std::make_unique<byte_v>(std::move(mem))) {}
         
-    public:
+        // MARK: copy constructor & assignment operator
+        
+        zbytebuf(const zbytebuf &other) {
+            m_mem = std::unique_ptr<byte_v>(new byte_v());
+            try {
+                for (byte &b : other.mem()) {
+                    m_mem->emplace_back(b);
+                }
+            } catch (std::exception &e) {
+            }
+        }
+        
+        zbytebuf(zbytebuf &&other) { m_mem = std::move(other.m_mem); }
+        
+        zbytebuf &operator=(const zbytebuf &other) {
+            if (&other == this) {  return *this; }
+            this->m_mem.reset(new byte_v(*(other.m_mem)));
+            return *this;
+        }
+        
+        zbytebuf &operator=(zbytebuf &&other) {
+            if (&other == this)
+                return *this;
+            
+            this->m_mem = std::move(other.m_mem);
+            return *this;
+        }
+        
+        //MARK: sort methods
+        
         zbytebuf& reverse() {
             std::reverse(m_mem->begin(), m_mem->end());
             return *this;
         }
-    public:
+        
+        //MARK: split & joint
 
         // 可以指定转换为字节的长度，补足则前面补0，默认为类型宽度
         template <typename T, int N = 0>
@@ -125,94 +158,22 @@ namespace zzz {
             
             return ret;
         }
-        
-        // slice the unuse part, keep the useful part.
-        zbytebuf& slice(size_t loc, size_t len) {
-            m_mem->erase(std::begin(*m_mem), std::begin(*m_mem) + loc);
-            m_mem->erase(std::begin(*m_mem) + len, std::end(*m_mem));
-            return *this;
-        }
-        
-        // create a new sub buffer from current buffer
-        zbytebuf sub_buf(size_t loc, size_t len) const{
-            if (loc + len > m_mem->size()) {
-                throw std::out_of_range("zbytebuf split out of range");
-            }
-            return zbytebuf(byte_v(m_mem->begin() + loc, m_mem->begin() + loc + len));
-        }
-        
-    public:
-        // MARK: copy constructor & assignment operator
-        zbytebuf(const zbytebuf &other) {
-            m_mem = std::unique_ptr<byte_v>(new byte_v());
-            try {
-                for (byte &b : other.mem()) {
-                    m_mem->emplace_back(b);
-                }
-            } catch (std::exception &e) {
-            }
-        }
-        
-        zbytebuf(zbytebuf &&other) { m_mem = std::move(other.m_mem); }
-        
-        zbytebuf &operator=(const zbytebuf &other) {
-            if (&other == this) {  return *this; }
-            this->m_mem.reset(new byte_v(*(other.m_mem)));
-            return *this;
-        }
-        
-        zbytebuf &operator=(zbytebuf &&other) {
-            if (&other == this)
-                return *this;
-            
-            this->m_mem = std::move(other.m_mem);
-            return *this;
-        }
+ 
+        //MARK: subscript operators
         
         unsigned char &operator[](int i) { return m_mem->at(i); }
         
         const byte &operator[](int i) const { return m_mem->at(i); }
         
-        bool equals(zbytebuf &&other) {
+        
+        //MARK: compare operators & methods
+        
+        bool equals(const zbytebuf &other) {
             return *this == other;
         }
-    public:
-        // MARK: operators
-        zbytebuf &operator+=(const zbytebuf &other) {
-            for (auto &ele : other.mem()) {
-                m_mem->emplace_back(ele);
-            }
-            return *this;
-        }
         
-        zbytebuf operator+(const zbytebuf &other) {
-            zbytebuf result;
-            result += *this;
-            result += other;
-            return result;
-        }
-        
-        zbytebuf operator~() // ~x, 求逆
-        {
-            byte_v vec(m_mem->size());
-            for (int i = 0; i < m_mem->size(); ++i) {
-                vec[i] = ~(*m_mem)[i];
-            }
-            return zbytebuf(vec);
-        }
-        
-        zbytebuf &operator^=(const zbytebuf &other) {
-            size_t shorter = std::min(m_mem->size(), other.mem().size());
-            for (int i = 0; i < shorter; ++i) {
-                (*m_mem)[i] ^= other.mem()[i];
-            }
-            return *this;
-        }
-        
-        zbytebuf operator^(const zbytebuf &other) {
-            zbytebuf result(*this);
-            result ^= other;
-            return result;
+        bool equals(zbytebuf &&other) {
+            return *this == other;
         }
         
         bool operator==(const zbytebuf &other) const {
@@ -229,6 +190,58 @@ namespace zzz {
             return hex_str != this->hex_str();
         }
         
+        // MARK: math operators
+        
+        zbytebuf &operator+=(const zbytebuf &other) {
+            for (auto &ele : other.mem()) {
+                m_mem->emplace_back(ele);
+            }
+            return *this;
+        }
+        
+        zbytebuf operator+(const zbytebuf &other) {
+            zbytebuf result;
+            result += *this;
+            result += other;
+            return result;
+        }
+        
+        zbytebuf& operator~() // ~x, 求逆
+        {
+            for (int i = 0; i < m_mem->size(); ++i) {
+                (*m_mem)[i] = ~(*m_mem)[i];
+            }
+            return *this;
+        }
+        
+        zbytebuf &operator^=(const zbytebuf &other) {
+            size_t shorter = std::min(m_mem->size(), other.mem().size());
+            for (int i = 0; i < shorter; ++i) {
+                (*m_mem)[i] ^= other.mem()[i];
+            }
+            return *this;
+        }
+        
+        zbytebuf operator^(const zbytebuf &other) {
+            zbytebuf result(*this);
+            result ^= other;
+            return result;
+        }
+
+        // MARK: getters
+        
+        const byte *bytes() const { return m_mem->data(); }
+        
+        size_t length() const { return m_mem->size(); }
+        
+        byte_v &mem() const { return *m_mem; }
+
+        // MARK: functional methods
+        
+        zbytebuf copy() const {
+            return zbytebuf(*this);
+        }
+        
         template <typename T>
         zbytebuf& pop(T& t) {
             t = read<T>(0);
@@ -243,32 +256,6 @@ namespace zzz {
             return *this;
         }
         
-    public:
-        // MARK: getters
-        const byte *bytes() const { return m_mem->data(); }
-        
-        size_t length() const { return m_mem->size(); }
-        
-        byte_v &mem() const { return *m_mem; }
-        
-        std::string utf8_str() const {
-            byte_v utf8_bytes(*m_mem);
-            if (utf8_bytes.empty() || utf8_bytes.back() != 0) {
-                utf8_bytes.push_back(0);
-            }
-            return std::string((char *)utf8_bytes.data());
-        }
-        
-        std::string hex_str() const {
-            std::stringstream ss;
-            for (auto b : *m_mem) {
-                ss << std::uppercase << std::setw(2) << std::setfill('0') << std::hex
-                << (unsigned int)b;
-            }
-            return ss.str();
-        }
-        
-    public:
         zbytebuf back(size_t aNum) const {
             if (length() < aNum) {
                 throw std::invalid_argument("zbytebuf out of bounds");
@@ -297,16 +284,40 @@ namespace zzz {
             return slice(aNum, length() - aNum);
         }
         
-        bool begin_with(const std::string& prefix) const {
-            auto vec = zbytebuf(prefix).mem();
-            return begin_with(vec);
+        // slice the unuse part, keep the useful part.
+        zbytebuf& slice(size_t loc, size_t len) {
+            m_mem->erase(std::begin(*m_mem), std::begin(*m_mem) + loc);
+            m_mem->erase(std::begin(*m_mem) + len, std::end(*m_mem));
+            return *this;
         }
         
-        bool begin_with(const byte_v& vec) const {
-            if (m_mem->size() < vec.size()) return false;
+        // create a new sub buffer from current buffer
+        zbytebuf sub_buf(size_t loc, size_t len) const{
+            if (loc + len > m_mem->size()) {
+                throw std::out_of_range("zbytebuf split out of range");
+            }
+            return zbytebuf(byte_v(m_mem->begin() + loc, m_mem->begin() + loc + len));
+        }
+        
+        bool headWith(const zbytebuf& buf) const {
+            if (this->length() < buf.length()) { return false; }
             auto iter1 = m_mem->begin();
-            auto iter2 = vec.begin();
-            while(iter2 != vec.end()) {
+            auto iter2 = buf.mem().begin();
+            while(iter2 != buf.mem().end()) {
+                if (*iter1 != *iter2) {
+                    return false;
+                }
+                iter1++;
+                iter2++;
+            }
+            return true;
+        }
+        
+        bool endWith(const zbytebuf& buf) const {
+            if (this->length() < buf.length()) { return false; }
+            auto iter1 = m_mem->end() - buf.length();
+            auto iter2 = buf.mem().begin();
+            while(iter2 != buf.mem().end()) {
                 if (*iter1 != *iter2) {
                     return false;
                 }
@@ -338,7 +349,7 @@ namespace zzz {
         zbytebuf& reserve(size_t n)
         {
             byte_v temp(n);
-            std::reverse(std::begin(*m_mem), std::end(*m_mem));
+            append<byte_v>(temp);
             return *this;
         }
 
@@ -361,9 +372,7 @@ namespace zzz {
             }
             return *this;
         }
-
-    public:
-        // MARK: functional
+        
         zbytebuf& map(std::function<byte (const byte &)> atransformer) {
             for (int i = 0; i < m_mem->size(); ++i) {
                 (*m_mem)[i] = atransformer((*m_mem)[i]);
@@ -378,11 +387,6 @@ namespace zzz {
             return *this;
         }
         
-        zbytebuf& debug(){
-            std::cout << *this << std::endl;
-            return *this;
-        }
-        
         bool all(std::function<bool(const byte&)> condition) {
             for (auto b: *m_mem) {
                 if (!condition(b)) {
@@ -391,7 +395,35 @@ namespace zzz {
             }
             return true;
         }
-   
+        
+        // MARK: debug view
+        
+        zbytebuf& debug(){
+#if DEBUG
+            std::cout << this->length() << "B:" << *this << std::endl;
+#endif
+            return *this;
+        }
+        
+        // MARK: stringify
+        
+        std::string utf8_str() const {
+            byte_v utf8_bytes(*m_mem);
+            if (utf8_bytes.empty() || utf8_bytes.back() != 0) {
+                utf8_bytes.push_back(0);
+            }
+            return std::string((char *)utf8_bytes.data());
+        }
+        
+        std::string hex_str() const {
+            std::stringstream ss;
+            for (auto b : *m_mem) {
+                ss << std::uppercase << std::setw(2) << std::setfill('0') << std::hex
+                << (unsigned int)b;
+            }
+            return ss.str();
+        }
+        
     public:
         friend std::ostream &operator<<(std::ostream &out, zbytebuf &obj);
         
@@ -401,9 +433,7 @@ namespace zzz {
     };
     
     inline std::ostream &operator<<(std::ostream &out, zbytebuf &obj) {
-        for (auto b : *(obj.m_mem)) {
-            out << std::setw(2) << std::setfill('0') << std::hex << (unsigned int)b;
-        }
+        out << obj.hex_str();
         out << std::endl;
         return out;
     }
