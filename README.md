@@ -1,7 +1,9 @@
 # zbytebuf
 一个纯头文件的轻量易用的函数式字节处理类。
 
-[![Build Status](https://www.travis-ci.org/zhiou/zbytebuf.svg?branch=master)](https://www.travis-ci.org/zhiou/zbytebuf)![GitHub](https://img.shields.io/github/license/zhiou/zbytebuf)![c++](https://img.shields.io/badge/c%2B%2B-%3E%3D%2011-green)
+[![Build Status](https://www.travis-ci.org/zhiou/zbytebuf.svg?branch=master)](https://www.travis-ci.org/zhiou/zbytebuf)
+[![GitHub](https://img.shields.io/github/license/zhiou/zbytebuf)](https://github.com/zhiou/zbytebuf/blob/master/LICENSE)
+[![c++](https://img.shields.io/badge/c%2B%2B-%3E%3D%2011-green)](https://en.cppreference.com/w/cpp/11)
 
 ## Why zbytebuf?
 
