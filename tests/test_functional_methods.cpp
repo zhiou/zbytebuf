@@ -80,8 +80,8 @@ TEST_CASE( "zbytebuf functional methods", "[normal]" ) {
     
     SECTION( "front methods" ) {
         int n = rand() % size;
-        auto front = buf.front(n);
-        auto left = buf.copy().drop_front(n);
+        auto front = buf.head(n);
+        auto left = buf.copy().drop_head(n);
         REQUIRE(front + left == buf);
     }
     
@@ -105,7 +105,7 @@ TEST_CASE( "zbytebuf functional methods", "[normal]" ) {
         buf.pad([&](const zbytebuf& buf) {
             return pad;
         });
-        REQUIRE(buf.endWith(pad));
+        REQUIRE(buf.backWith(pad));
         
         buf.pad_head([&](const zbytebuf& buf) {
             return pad;
@@ -117,7 +117,7 @@ TEST_CASE( "zbytebuf functional methods", "[normal]" ) {
         int n = rand() % size;
         auto reserved = buf.reserve(n);
         REQUIRE(reserved.headWith(buf));
-        REQUIRE(reserved.endWith(zbytebuf(n)));
+        REQUIRE(reserved.backWith(zbytebuf(n)));
     }
     
     SECTION( "relace method" ) {
