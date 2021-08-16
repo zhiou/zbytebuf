@@ -96,6 +96,18 @@ TEST_CASE( "zbytebuf constructors", "[normal]" ) {
         }
     }
     
+    SECTION( "create by factory methods" ) {
+        auto rand = zbytebuf::rand(10);
+        REQUIRE(rand.length() == 10);
+        
+        auto empty = zbytebuf::empty();
+        REQUIRE(empty.length() == 0);
+        
+        auto nLen = zbytebuf::alloc(10);
+        REQUIRE(nLen.length() == 10);
+        
+    }
+    
     if (rdb) {
         free(rdb);
     }

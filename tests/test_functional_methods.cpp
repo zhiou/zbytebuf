@@ -145,4 +145,9 @@ TEST_CASE( "zbytebuf functional methods", "[normal]" ) {
         });
         REQUIRE(!fail);
     }
+    
+    SECTION( "repeat method" ) {
+        auto result = buf.copy().repeat(2);
+        REQUIRE(result == (buf + buf + buf));
+    }
 }

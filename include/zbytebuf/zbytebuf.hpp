@@ -30,11 +30,10 @@
 #include <random>
 #include <sstream>
 #include <vector>
-#include <set>
-#include <errno.h>
 
-#define ZBF_VER_MAJOR 6
-#define ZBF_VER_MINOR 3
+
+#define ZBF_VER_MAJOR 0
+#define ZBF_VER_MINOR 1
 #define ZBF_VER_PATCH 0
 
 #define ZBYTEBUF_VERSION (ZBF_VER_MAJOR * 10000 + ZBF_VER_MINOR * 100 + ZBF_VER_PATCH)
@@ -58,7 +57,7 @@ namespace zzz {
             if (!random)
                 return;
             
-            std::default_random_engine source;
+            static thread_local std::default_random_engine source((std::random_device()()));
             std::uniform_int_distribution<byte> dist(0, 0xFF);
             auto r = std::bind(dist, source);
             std::generate(std::begin(*m_mem), std::end(*m_mem), std::ref(r));
@@ -124,6 +123,19 @@ namespace zzz {
         zbytebuf& reverse() {
             std::reverse(m_mem->begin(), m_mem->end());
             return *this;
+        }
+        
+        //MARK: factory methods
+        static zbytebuf rand(int n) {
+            return std::move(zbytebuf(n, true));
+        }
+        
+        static zbytebuf empty() {
+            return std::move(zbytebuf());
+        }
+        
+        static zbytebuf alloc(int n) {
+            return std::move(zbytebuf(n));
         }
         
         //MARK: split & joint
@@ -411,6 +423,14 @@ namespace zzz {
                 }
             }
             return true;
+        }
+        
+        zbytebuf& repeat(int n) {
+            zbytebuf cache(*this);
+            for (int i = 0; i < n; i++) {
+                *this += cache;
+            }
+            return *this;
         }
         
         // MARK: debug view
