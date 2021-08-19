@@ -170,7 +170,7 @@ public:
         if (N > 0) {
             if (N > temp.length()) {
                 auto zeros = zbytebuf(N - temp.length());
-                temp.addHead(zeros);
+                temp.push_head(zeros);
             } else {
                 temp.drop_back(temp.length() - N);
             }
@@ -180,7 +180,7 @@ public:
     }
     
     template <typename T, int N = 0>
-    zbytebuf& appendIf(T ut, std::function<bool()> condition) {
+    zbytebuf& append_if(T ut, std::function<bool()> condition) {
         if (condition()) {
             append<T, N>(ut);
         }
@@ -221,15 +221,8 @@ public:
         return this == &other || *(this->m_mem) == other.mem();
     }
     
-    bool operator==(const std::string &hex_str) const {
-        return hex_str == this->hex_str();
-    }
-    
     bool operator!=(const zbytebuf &other) const { return !(*this == other); }
     
-    bool operator!=(const std::string &hex_str) const {
-        return hex_str != this->hex_str();
-    }
     
     // MARK: math operators
     
@@ -340,7 +333,7 @@ public:
         return zbytebuf(byte_v(m_mem->begin() + loc, m_mem->begin() + loc + len));
     }
     
-    bool headWith(const zbytebuf& buf) const {
+    bool is_head_with(const zbytebuf& buf) const {
         if (this->length() < buf.length()) { return false; }
         auto iter1 = m_mem->begin();
         auto iter2 = buf.mem().begin();
@@ -354,7 +347,7 @@ public:
         return true;
     }
     
-    bool backWith(const zbytebuf& buf) const {
+    bool is_back_with(const zbytebuf& buf) const {
         if (this->length() < buf.length()) { return false; }
         auto iter1 = m_mem->end() - buf.length();
         auto iter2 = buf.mem().begin();
@@ -368,19 +361,24 @@ public:
         return true;
     }
     
-    zbytebuf& addHead(const zbytebuf& buf) {
+    zbytebuf& push_head(const zbytebuf& buf) {
         m_mem->insert(std::begin(*m_mem), std::begin(buf.mem()), std::end(buf.mem()));
         return *this;
     }
     
-    zbytebuf& pad(std::function<zbytebuf(const zbytebuf& ori)> padding)
+    zbytebuf& push_back(const zbytebuf& buf) {
+        m_mem->insert(std::end(*m_mem), std::begin(buf.mem()), std::end(buf.mem()));
+        return *this;
+    }
+    
+    zbytebuf& push_back(std::function<zbytebuf(const zbytebuf& ori)> padding)
     {
         auto tail = padding(*this);
         m_mem->insert(std::end(*m_mem), std::begin(tail.mem()), std::end(tail.mem()));
         return *this;
     }
     
-    zbytebuf& pad_head(std::function<zbytebuf(const zbytebuf& ori)> padding)
+    zbytebuf& push_head(std::function<zbytebuf(const zbytebuf& ori)> padding)
     {
         auto tail = padding(*this);
         m_mem->insert(std::begin(*m_mem), std::begin(tail.mem()), std::end(tail.mem()));
@@ -435,6 +433,15 @@ public:
             }
         }
         return true;
+    }
+    
+    bool any(std::function<bool(const byte&)> condition) {
+        for (auto b: *m_mem) {
+            if (condition(b)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     zbytebuf& repeat(int n) {

@@ -111,7 +111,7 @@ TEST_CASE( "zbytebuf data increased", "[normal]") {
     SECTION( "append if" ) {
         SECTION ( "append if confition was satisfied" ) {
             zbytebuf buf;
-            buf.appendIf("ABBC", [](){
+            buf.append_if("ABBC", [](){
                 return true;
             });
             REQUIRE(buf.equals("ABBC"));
@@ -119,7 +119,7 @@ TEST_CASE( "zbytebuf data increased", "[normal]") {
         
         SECTION ( "append if confition wan't satisfied" ) {
             zbytebuf buf;
-            buf.appendIf("0xABBC", [](){
+            buf.append_if("0xABBC", [](){
                 return false;
             });
             REQUIRE(buf.length() == 0);

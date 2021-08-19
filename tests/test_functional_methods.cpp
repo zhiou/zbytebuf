@@ -92,32 +92,39 @@ TEST_CASE( "zbytebuf functional methods", "[normal]" ) {
         REQUIRE(left == buf.sub_buf(loc, len));
     }
     
-    SECTION( "head methods" ) {
+    SECTION( "push head methods" ) {
         size_t headSize = rand() % 0xFF;
         zbytebuf head(headSize, true);
-        auto headed = buf.addHead(head);
-        REQUIRE(headed.headWith(head));
+        auto headed = buf.push_head(head);
+        REQUIRE(headed.is_head_with(head));
     }
     
-    SECTION( "pad methods" ) {
+    SECTION( "push back methods" ) {
+        size_t backSize = rand() % 0xFF;
+        zbytebuf back(backSize, true);
+        auto backed = buf.push_back(back);
+        REQUIRE(backed.is_back_with(back));
+    }
+    
+    SECTION( "pad with function methods" ) {
         size_t padLen = rand() % 0x10;
         zbytebuf pad(padLen, true);
-        buf.pad([&](const zbytebuf& buf) {
+        buf.push_back([&](const zbytebuf& buf) {
             return pad;
         });
-        REQUIRE(buf.backWith(pad));
+        REQUIRE(buf.is_back_with(pad));
         
-        buf.pad_head([&](const zbytebuf& buf) {
+        buf.push_head([&](const zbytebuf& buf) {
             return pad;
         });
-        REQUIRE(buf.headWith(pad));
+        REQUIRE(buf.is_head_with(pad));
     }
     
     SECTION( "reserve method" ) {
         int n = rand() % size;
         auto reserved = buf.reserve(n);
-        REQUIRE(reserved.headWith(buf));
-        REQUIRE(reserved.backWith(zbytebuf(n)));
+        REQUIRE(reserved.is_head_with(buf));
+        REQUIRE(reserved.is_back_with(zbytebuf(n)));
     }
     
     SECTION( "relace method" ) {
