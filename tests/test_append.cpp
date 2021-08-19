@@ -41,7 +41,7 @@ std::string bytes2string(byte* bytes, size_t len) {
 //MARK: 增
 TEST_CASE( "zbytebuf data increased", "[normal]") {
     
-    auto size = rand() % 0x800;
+    auto size = GENERATE(take(10, random(0, 0x800)));
     
     byte* rdb = (byte*)malloc(size);
     for (int i = 0; i < size; i++) {

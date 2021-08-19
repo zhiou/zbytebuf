@@ -28,7 +28,7 @@
 using namespace zzz;
 
 TEST_CASE( "zbytebuf math operators", "[normal]" ) {
-    auto size = rand() % 0x800 + 1;
+    auto size = GENERATE(take(10, random(0, 0x800))) + 1;
     
     zbytebuf buf(size, true);
     

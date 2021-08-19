@@ -28,7 +28,7 @@
 using namespace zzz;
 
 TEST_CASE( "zbytebuf functional methods", "[normal]" ) {
-    auto size = rand() % 0x800 + 0x10;
+    auto size = GENERATE(take(10, random(0, 0x800))) + 0x10;
     
     zbytebuf buf(size, true);
     
@@ -128,7 +128,7 @@ TEST_CASE( "zbytebuf functional methods", "[normal]" ) {
     }
     
     SECTION( "relace method" ) {
-        size_t loc = rand() % size;
+        size_t loc = rand() % size - 1;
         size_t len = rand() % (size - loc);
         zbytebuf sub(len, true);
         auto replaced = buf.copy().replace(loc, len, sub);
@@ -143,7 +143,7 @@ TEST_CASE( "zbytebuf functional methods", "[normal]" ) {
         auto mapped = buf.copy().map([](const byte& b) {
             return ~b;
         });
-        
+
         REQUIRE(mapped == ~buf);
     }
     

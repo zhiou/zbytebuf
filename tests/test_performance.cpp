@@ -8,10 +8,10 @@
 #include "catch.hpp"
 #include "zbytebuf/zbytebuf.hpp"
 
+#if defined(CATCH_CONFIG_ENABLE_BENCHMARKING)
 
 TEST_CASE("performance test", "[perf]")
 {
-    
     BENCHMARK_ADVANCED("100B random buf constructor")(Catch::Benchmark::Chronometer meter)
     {
         std::vector<Catch::Benchmark::storage_for<zzz::zbytebuf>> storage(meter.runs());
@@ -99,3 +99,5 @@ TEST_CASE("performance test", "[perf]")
         });
     };
 }
+
+#endif
