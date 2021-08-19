@@ -14,15 +14,26 @@ TEST_CASE("performance test", "[perf]")
     
     BENCHMARK_ADVANCED("100B random buf constructor")(Catch::Benchmark::Chronometer meter)
     {
+        std::vector<Catch::Benchmark::storage_for<zzz::zbytebuf>> storage(meter.runs());
         meter.measure([&](int run) {
-            zzz::zbytebuf(100, true);
+            return storage[run].construct(100, true);
+        });
+    };
+    
+    BENCHMARK_ADVANCED("100B random buf destructor")(Catch::Benchmark::Chronometer meter)
+    {
+        std::vector<Catch::Benchmark::destructable_object<zzz::zbytebuf>> storage(meter.runs());
+        for(auto&& o : storage)
+            o.construct(100);
+        meter.measure([&](int run) {
+            return storage[run].destruct();
         });
     };
     
     BENCHMARK_ADVANCED("100B random buf factory create")(Catch::Benchmark::Chronometer meter)
     {
         meter.measure([&](int run) {
-            zzz::zbytebuf::rand(100);
+            return zzz::zbytebuf::rand(100);
         });
     };
     
@@ -31,6 +42,7 @@ TEST_CASE("performance test", "[perf]")
         zzz::zbytebuf buf(100, true);
         meter.measure([&](int run) {
             auto assigned = buf;
+            return assigned;
         });
     };
     
@@ -38,7 +50,7 @@ TEST_CASE("performance test", "[perf]")
     {
         zzz::zbytebuf buf(100, true);
         meter.measure([&](int run) {
-            buf.copy();
+            return buf.copy();
         });
     };
     
@@ -47,6 +59,7 @@ TEST_CASE("performance test", "[perf]")
         zzz::zbytebuf buf(100, true);
         meter.measure([&](int run) {
             auto assigned = buf;
+            return assigned;
         });
     };
     
@@ -55,7 +68,7 @@ TEST_CASE("performance test", "[perf]")
         zzz::zbytebuf buf(100, true);
         auto assigned = buf;
         meter.measure([&](int run) {
-            buf.push_back(assigned);
+            return buf.push_back(assigned);
         });
     };
     
@@ -64,7 +77,7 @@ TEST_CASE("performance test", "[perf]")
         zzz::zbytebuf buf(100, true);
   
         meter.measure([&](int run) {
-            buf.sub_buf(0, 100);
+            return buf.sub_buf(0, 100);
         });
     };
     
@@ -73,7 +86,7 @@ TEST_CASE("performance test", "[perf]")
         zzz::zbytebuf buf(100, true);
         auto assigned = buf;
         meter.measure([&](int run) {
-            bool equal = (buf == assigned);
+            return (buf == assigned);
         });
     };
     
@@ -82,7 +95,7 @@ TEST_CASE("performance test", "[perf]")
         zzz::zbytebuf buf(100, true);
         std::string hexstr = buf.hex_str();
         meter.measure([&](int run) {
-            bool equal = (buf == hexstr);
+            return  (buf == hexstr);
         });
     };
 }
